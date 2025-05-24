@@ -1,18 +1,49 @@
-version: '3'
-services:
-  web:
-    build:
-      context: ./frontend
-    ports:
-      - "80:80"
-    volumes:
-      - ./frontend/app:/usr/share/nginx/html
-  
-  backend:
-    build:
-      context: ./backend
-    ports:
-      - "8000:8000"
-    volumes:
-      - ./backend:/app
-    restart: on-failure
+# docker-compose.yml (Atualizado para Arquitetura de Microsserviços)
+    version: '3.8' # Usar uma versão mais recente para melhores recursos e sintaxe
+
+    services:
+      # Serviço do Frontend (Web Server)
+      web:
+        build:
+          context: ./frontend # O Dockerfile do frontend está no diretório 'frontend'
+        ports:
+          - "80:80" # Mapeia a porta 80 do host para a porta 80 do contêiner Nginx
+        volumes:
+          - ./frontend/app:/usr/share/nginx/html # Monta o diretório 'app' do frontend no contêiner Nginx
+        # Garante que o serviço de avaliação esteja pronto antes do frontend iniciar.
+        # Isso ajuda a evitar erros de conexão inicial.
+        depends_on:
+          - client_evaluation_service 
+
+      # Novo Serviço de Avaliação de Cliente (Backend Principal)
+      client_evaluation_service:
+        build:
+          context: ./client_evaluation_service # Novo diretório para este serviço
+        ports:
+          - "8000:8000" # Mapeia a porta 8000 do host para a porta 8000 do contêiner.
+                       # O frontend ainda chamará http://localhost:8000.
+                       # Em um ambiente de produção com API Gateway, esta porta pode não ser exposta diretamente.
+        volumes:
+          - ./client_evaluation_service:/app # Monta o código do serviço no contêiner
+        environment:
+          # Passa a URL do Serviço de ML Model Serving como variável de ambiente.
+          # Dentro da rede Docker Compose, 'ml_model_service' é o nome do host do contêiner.
+          ML_MODEL_SERVICE_URL: http://ml_model_service:8001
+        # Garante que o serviço de ML esteja pronto antes que o serviço de avaliação tente se conectar a ele.
+        depends_on:
+          - ml_model_service 
+
+      # Novo Serviço de ML Model Serving (Backend Dedicado ao Modelo)
+      ml_model_service:
+        build:
+          context: ./ml_model_service # Novo diretório para este serviço
+        ports:
+          - "8001:8001" # Mapeia uma porta diferente (8001) para este serviço no host.
+                       # Isso permite acessá-lo diretamente para testes, mas sua comunicação principal é interna.
+        volumes:
+          - ./ml_model_service:/app # Monta o código do serviço no contêiner
+          # Monta o arquivo do modelo .pkl no contêiner do serviço de ML.
+          # O caminho './backend/modelo_cluster_cartao_credito.pkl' é do host,
+          # e '/app/modelo_cluster_cartao_credito.pkl' é o caminho dentro do contêiner.
+          - ./backend/modelo_cluster_cartao_credito.pkl:/app/modelo_cluster_cartao_credito.pkl
+        restart: on-failure # Reinicia o contêiner se ele falhar, para maior resiliência.

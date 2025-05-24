@@ -1,0 +1,6 @@
+scikit-learn==1.5.2
+joblib==1.4.2
+fastapi~=0.115.0
+pydantic~=2.9.2
+uvicorn
+numpy # Necessário para manipulação de arrays no modelo
