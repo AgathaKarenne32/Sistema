@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Avaliação Financeira</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <div class="container mt-5">
+        <h1 class="text-center">Avaliação Financeira</h1>
+        <form id="avaliacaoForm">
+            <div class="form-group">
+                <label for="name">Nome do Futuro Cliente:</label>
+                <input type="text" class="form-control" id="name" name="name" required>
+            </div>
+            <div class="form-group">
+                <label for="balance">Limite Restante:</label>
+                <input type="number" step="0.01" class="form-control" id="balance" name="balance" required>
+            </div>
+            <div class="form-group">
+                <label for="purchases">Quantidade em Compras:</label>
+                <input type="number" step="0.01" class="form-control" id="purchases" name="purchases" required>
+            </div>
+            <div class="form-group">
+                <label for="cash_advance">Saques:</label>
+                <input type="number" step="0.01" class="form-control" id="cash_advance" name="cash_advance" required>
+            </div>
+            <div class="form-group">
+                <label for="credit_limit">Limite de Crédito:</label>
+                <input type="number" step="0.01" class="form-control" id="credit_limit" name="credit_limit" required>
+            </div>
+            <div class="form-group">
+                <label for="payments">Pagamentos:</label>
+                <input type="number" step="0.01" class="form-control" id="payments" name="payments" required>
+            </div>
+            <button type="submit" class="btn btn-primary">Enviar para Análise</button>
+        </form>
+        <div id="resultado" class="mt-4"></div>
+    </div>
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="js/scripts.js"></script>
+</body>
+</html>
